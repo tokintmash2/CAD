@@ -1,0 +1,21 @@
+(defun c:MergeBOMTexts ()
+  (prompt "\nSelect the BOM table: ")
+  (setq tableObj (car (entsel)))
+  (if (and tableObj (= (cdr (assoc 0 (entget tableObj))) "ACAD_TABLE"))
+    (progn
+      (setq textsToMerge (list))
+      (setq columnNumber 2) ; Specify the column where texts need to be merged
+      (prompt "\nSelect texts to merge: ")
+      (while (setq textObj (car (entsel)))
+        (setq textContent (cdr (assoc 1 (entget textObj))))
+        (setq textsToMerge (append textsToMerge (list textContent)))
+      )
+      (setq mergedText (apply 'strcat textsToMerge))
+      (setq cellRow 0) ; Specify the row number for the merged text
+      (vla-setText tableObj cellRow columnNumber mergedText)
+      (princ "\nTexts merged successfully.")
+    )
+    (princ "\nSelected object is not a table.")
+  )
+  (princ)
+)
